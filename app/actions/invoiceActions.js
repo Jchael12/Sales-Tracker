@@ -50,3 +50,19 @@ export async function deleteInvoice(id) {
     return { success: false, error: error.message };
   }
 }
+
+export async function updateInvoice(id, data) {
+  try {
+    await dbConnect();
+    const result = await Invoice.findByIdAndUpdate(id, data, { new: true });
+
+    if (result) {
+      return { success: true, invoice: JSON.parse(JSON.stringify(result)) };
+    } else {
+      return { success: false, error: "Invoice not found" };
+    }
+  } catch (error) {
+    console.error("Failed to update invoice:", error);
+    return { success: false, error: error.message };
+  }
+}

@@ -25,6 +25,7 @@ import {
   addInvoice,
   deleteInvoice,
   getInvoices,
+  updateInvoice,
 } from "./actions/invoiceActions";
 
 export default function Home() {
@@ -36,6 +37,7 @@ export default function Home() {
     payment: "",
   });
   const [invoices, setInvoices] = useState([]);
+  const [selectedInvoice, setSelectedInvoice] = useState(null);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -44,10 +46,21 @@ export default function Home() {
 
   const [isPending, startTransition] = useTransition();
 
+  const handleUpdate = (invoice) => {
+    setSelectedInvoice(invoice);
+    setFormData({
+      name: invoice.name,
+      orders: invoice.orders,
+      price: invoice.price,
+      status: invoice.status,
+      payment: invoice.payment,
+    });
+    onOpen();
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     startTransition(async () => {
-      // Create a plain object from formData
       const plainFormData = {
         name: formData.name,
         orders: formData.orders,
@@ -56,20 +69,43 @@ export default function Home() {
         payment: formData.payment,
       };
 
-      const result = await addInvoice(plainFormData);
-      if (result.success) {
-        setInvoices([...invoices, result.invoice]);
-        setFormData({
-          name: "",
-          orders: "",
-          price: "",
-          status: "",
-          payment: "",
-        });
-        toast.success("Invoice added successfully!");
+      if (selectedInvoice) {
+        const result = await updateInvoice(selectedInvoice._id, plainFormData);
+        if (result.success) {
+          setInvoices(
+            invoices.map((inv) =>
+              inv._id === selectedInvoice._id ? result.invoice : inv
+            )
+          );
+          toast.success("Invoice updated successfully!");
+        } else {
+          toast.error(`Failed to update invoice: ${result.error}`);
+        }
       } else {
-        toast.error(`Failed to add invoice: ${result.error}`);
+        const result = await addInvoice(plainFormData);
+        if (result.success) {
+          setInvoices([...invoices, result.invoice]);
+          setFormData({
+            name: "",
+            orders: "",
+            price: "",
+            status: "",
+            payment: "",
+          });
+          toast.success("Invoice added successfully!");
+        } else {
+          toast.error(`Failed to add invoice: ${result.error}`);
+        }
       }
+
+      setSelectedInvoice(null);
+      setFormData({
+        name: "",
+        orders: "",
+        price: "",
+        status: "",
+        payment: "",
+      });
     });
   };
 
@@ -146,6 +182,14 @@ export default function Home() {
                     <TableCell>{invoice.payment}</TableCell>
                     <TableCell>
                       <Button
+                        color="primary"
+                        size="sm"
+                        onPress={() => handleUpdate(invoice)}
+                        className="mr-2"
+                      >
+                        Update
+                      </Button>
+                      <Button
                         color="danger"
                         size="sm"
                         onPress={() => handleDelete(invoice._id)}
@@ -169,14 +213,28 @@ export default function Home() {
               </Button>
               <Modal
                 isOpen={isOpen}
-                onOpenChange={onOpenChange}
+                onOpenChange={(open) => {
+                  if (!open) {
+                    setSelectedInvoice(null);
+                    setFormData({
+                      name: "",
+                      orders: "",
+                      price: "",
+                      status: "",
+                      payment: "",
+                    });
+                  }
+                  onOpenChange(open);
+                }}
                 placement="top-center"
               >
                 <ModalContent>
                   {(onClose) => (
                     <form onSubmit={handleSubmit}>
                       <ModalHeader className="flex flex-col gap-1">
-                        Customer Invoice
+                        {selectedInvoice
+                          ? "Update Invoice"
+                          : "Customer Invoice"}
                       </ModalHeader>
                       <ModalBody>
                         <Input
@@ -279,7 +337,7 @@ export default function Home() {
                           onPress={onClose}
                           isLoading={isPending}
                         >
-                          Add
+                          {selectedInvoice ? "Update" : "Add"}
                         </Button>
                       </ModalFooter>
                     </form>
