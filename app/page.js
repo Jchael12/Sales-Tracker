@@ -143,65 +143,68 @@ export default function Home() {
             <h1 className="font-bold text-7xl text-white text-center mt-8">
               Sales Tracker
             </h1>
-            <Table
-              aria-label="Example static collection table"
-              removeWrapper
-              className="border-collapse px-20 m-10 light text-white"
-            >
-              <TableHeader>
-                <TableColumn className="bg-transparent text-white">
-                  ID
-                </TableColumn>
-                <TableColumn className="bg-transparent text-white">
-                  NAME
-                </TableColumn>
-                <TableColumn className="bg-transparent text-white">
-                  ORDERS
-                </TableColumn>
-                <TableColumn className="bg-transparent text-white">
-                  PRICE
-                </TableColumn>
-                <TableColumn className="bg-transparent text-white">
-                  STATUS
-                </TableColumn>
-                <TableColumn className="bg-transparent text-white">
-                  PAYMENT
-                </TableColumn>
-                <TableColumn className="bg-transparent text-white">
-                  ACTIONS
-                </TableColumn>
-              </TableHeader>
-              <TableBody>
-                {invoices.map((invoice, index) => (
-                  <TableRow key={invoice._id}>
-                    <TableCell>{index + 1}</TableCell>
-                    <TableCell>{invoice.name}</TableCell>
-                    <TableCell>{invoice.orders}</TableCell>
-                    <TableCell>{invoice.price}</TableCell>
-                    <TableCell>{invoice.status}</TableCell>
-                    <TableCell>{invoice.payment}</TableCell>
-                    <TableCell>
-                      <Button
-                        color="primary"
-                        size="sm"
-                        onPress={() => handleUpdate(invoice)}
-                        className="mr-2"
-                      >
-                        Update
-                      </Button>
-                      <Button
-                        color="danger"
-                        size="sm"
-                        onPress={() => handleDelete(invoice._id)}
-                        isLoading={isPending}
-                      >
-                        Delete
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+            {/* Updated wrapper div with custom scrollbar styles */}
+            <div className="w-full max-w-[90%] h-[60vh] overflow-y-auto overflow-x-hidden custom-scrollbar">
+              <Table
+                aria-label="Example static collection table"
+                removeWrapper
+                className="border-collapse px-20 m-10 light text-white"
+              >
+                <TableHeader>
+                  <TableColumn className="bg-transparent text-white">
+                    ID
+                  </TableColumn>
+                  <TableColumn className="bg-transparent text-white">
+                    NAME
+                  </TableColumn>
+                  <TableColumn className="bg-transparent text-white">
+                    ORDERS
+                  </TableColumn>
+                  <TableColumn className="bg-transparent text-white">
+                    PRICE
+                  </TableColumn>
+                  <TableColumn className="bg-transparent text-white">
+                    STATUS
+                  </TableColumn>
+                  <TableColumn className="bg-transparent text-white">
+                    PAYMENT
+                  </TableColumn>
+                  <TableColumn className="bg-transparent text-white">
+                    ACTIONS
+                  </TableColumn>
+                </TableHeader>
+                <TableBody>
+                  {invoices.map((invoice, index) => (
+                    <TableRow key={invoice._id}>
+                      <TableCell>{index + 1}</TableCell>
+                      <TableCell>{invoice.name}</TableCell>
+                      <TableCell>{invoice.orders}</TableCell>
+                      <TableCell>{invoice.price}</TableCell>
+                      <TableCell>{invoice.status}</TableCell>
+                      <TableCell>{invoice.payment}</TableCell>
+                      <TableCell>
+                        <Button
+                          color="primary"
+                          size="sm"
+                          onPress={() => handleUpdate(invoice)}
+                          className="mr-2"
+                        >
+                          Update
+                        </Button>
+                        <Button
+                          color="danger"
+                          size="sm"
+                          onPress={() => handleDelete(invoice._id)}
+                          isLoading={isPending}
+                        >
+                          Delete
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
             <Toaster richColors position="top-right" />
             <div className="absolute bottom-10 left-10">
               <Button
@@ -318,8 +321,8 @@ export default function Home() {
                           <SelectItem key="cash" value="cash">
                             Cash
                           </SelectItem>
-                          <SelectItem key="card" value="card">
-                            Card
+                          <SelectItem key="gcash" value="gcash">
+                            Gcash
                           </SelectItem>
                           <SelectItem key="bank" value="bank">
                             Bank
